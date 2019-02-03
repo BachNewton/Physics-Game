@@ -1,7 +1,7 @@
 var sphereShape, sphereBody, world, physicsMaterial, walls = [], balls = [], ballMeshes = [], boxes = [], boxMeshes = [];
 
 var camera, scene, renderer;
-var geometry, material, mesh;
+var geometry;
 var time = Date.now();
 
 var stats = new Stats();
@@ -78,12 +78,15 @@ function init() {
     geometry = new THREE.PlaneGeometry(300, 300, 50, 50);
     geometry.applyMatrix(new THREE.Matrix4().makeRotationX(- Math.PI / 2));
 
-    material = new THREE.MeshLambertMaterial({ color: 'green' });
+    var material = new THREE.MeshLambertMaterial({ color: 'green' });
 
-    mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+    var floorMesh = new THREE.Mesh(geometry, material);
+    floorMesh.receiveShadow = true;
+    scene.add(floorMesh);
 
     renderer = new THREE.WebGLRenderer();
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     document.body.appendChild(renderer.domElement);
@@ -103,6 +106,8 @@ function init() {
         var boxBody = new CANNON.Body({ mass: 5 });
         boxBody.addShape(boxShape);
         var boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+        boxMesh.castShadow = true;
+        boxMesh.receiveShadow = true;
         world.add(boxBody);
         scene.add(boxMesh);
         boxBody.position.set(x, y, z);
@@ -204,6 +209,8 @@ window.addEventListener("click", function (e) {
         var ballBody = new CANNON.Body({ mass: 1 });
         ballBody.addShape(ballShape);
         var ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
+        ballMesh.castShadow = true;
+        ballMesh.receiveShadow = true;
         world.add(ballBody);
         scene.add(ballMesh);
         balls.push(ballBody);
