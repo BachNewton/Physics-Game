@@ -4,7 +4,7 @@
  */
 var PointerLockControls = function (camera, cannonBody) {
     var velocityFactor = 0.2;
-    var jumpVelocity = 20;
+    var jumpVelocity = 15;
     var scope = this;
 
     var pitchObject = new THREE.Object3D();

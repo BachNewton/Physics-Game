@@ -2,7 +2,6 @@ var playerShape, playerBody, world;
 
 var camera, scene, renderer;
 var geometry;
-var time = Date.now();
 
 var boxes = new Boxes();
 var balls = new Balls();
@@ -108,21 +107,29 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-var dt = 1 / 60;
+var performanceThen = performance.now();
+var delta = 1 / 60;
+var fires = 0;
 function animate() {
     stats.begin();
 
     requestAnimationFrame(animate);
 
     if (controls.enabled) {
-        world.step(dt);
+        world.step(delta);
         balls.updatePositions();
         boxes.updatePositions();
+
+        if (fires < 750) {
+            // balls.fireFrom(playerBody, playerShape, world, scene);
+            fires++;
+        }
     }
 
-    controls.update(Date.now() - time);
+    controls.update(performance.now() - performanceThen);
     renderer.render(scene, camera);
-    time = Date.now();
+
+    performanceThen = performance.now();
 
     stats.end();
 }
