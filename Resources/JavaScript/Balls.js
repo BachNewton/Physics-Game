@@ -2,6 +2,8 @@ function Balls() {
     this.bodies = [];
     this.meshes = [];
 
+    this.MASS = 1;
+
     this.shape = new CANNON.Sphere(0.2);
     this.geometry = new THREE.SphereGeometry(this.shape.radius, 16, 16);
     this.material = new THREE.MeshLambertMaterial({ color: 'yellow' });
@@ -28,7 +30,7 @@ function Balls() {
         var y = playerBody.position.y;
         var z = playerBody.position.z;
 
-        var body = new CANNON.Body({ mass: 1 });
+        var body = new CANNON.Body({ mass: this.MASS });
         body.addShape(this.shape);
 
         var mesh = new THREE.Mesh(this.geometry, this.material);
