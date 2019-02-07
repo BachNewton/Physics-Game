@@ -1,8 +1,10 @@
-var sphereShape, sphereBody, world, physicsMaterial, walls = [], balls = [], ballMeshes = [], boxes = [], boxMeshes = [];
+var sphereShape, sphereBody, world, physicsMaterial, walls = [], balls = [], ballMeshes = [];
 
 var camera, scene, renderer;
 var geometry;
 var time = Date.now();
+
+var boxes = new Boxes();
 
 var stats = new Stats();
 stats.showPanel(0);
@@ -93,62 +95,40 @@ function init() {
 
     window.addEventListener('resize', onWindowResize, false);
 
-    // Add boxes
-    var halfExtents = new CANNON.Vec3(1, 1, 1);
-    var boxShape = new CANNON.Box(halfExtents);
-    var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
-    var boxMaterial = new THREE.MeshLambertMaterial({ color: 'white' });
-    var numBoxes = 100;
-    for (var i = 0; i < numBoxes; i++) {
-        var x = (Math.random() - 0.5) * 100;
-        var y = 1 + (Math.random() - 0.5) * 1;
-        var z = (Math.random() - 0.5) * 100;
-        var boxBody = new CANNON.Body({ mass: 5 });
-        boxBody.addShape(boxShape);
-        var boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
-        boxMesh.castShadow = true;
-        boxMesh.receiveShadow = true;
-        world.add(boxBody);
-        scene.add(boxMesh);
-        boxBody.position.set(x, y, z);
-        boxMesh.position.set(x, y, z);
-        boxes.push(boxBody);
-        boxMeshes.push(boxMesh);
-    }
+    boxes.addTo(world, scene);
 
+    // // Add linked boxes
+    // var size = 0.5;
+    // var he = new CANNON.Vec3(size, size, size * 0.1);
+    // var boxShape = new CANNON.Box(he);
+    // var mass = 0;
+    // var space = 0.1 * size;
+    // var N = 5, last;
+    // var boxGeometry = new THREE.BoxGeometry(he.x * 2, he.y * 2, he.z * 2);
+    // var chainMaterial = new THREE.MeshLambertMaterial({ color: 'red' });
+    // for (var i = 0; i < N; i++) {
+    //     var boxbody = new CANNON.Body({ mass: mass });
+    //     boxbody.addShape(boxShape);
+    //     var boxMesh = new THREE.Mesh(boxGeometry, chainMaterial);
+    //     boxbody.position.set(5, (N - i) * (size * 2 + 2 * space) + size * 2 + space, 0);
+    //     boxbody.linearDamping = 0.01;
+    //     boxbody.angularDamping = 0.01;
+    //     world.add(boxbody);
+    //     scene.add(boxMesh);
+    //     boxes.push(boxbody);
+    //     boxMeshes.push(boxMesh);
 
-    // Add linked boxes
-    var size = 0.5;
-    var he = new CANNON.Vec3(size, size, size * 0.1);
-    var boxShape = new CANNON.Box(he);
-    var mass = 0;
-    var space = 0.1 * size;
-    var N = 5, last;
-    var boxGeometry = new THREE.BoxGeometry(he.x * 2, he.y * 2, he.z * 2);
-    var chainMaterial = new THREE.MeshLambertMaterial({ color: 'red' });
-    for (var i = 0; i < N; i++) {
-        var boxbody = new CANNON.Body({ mass: mass });
-        boxbody.addShape(boxShape);
-        var boxMesh = new THREE.Mesh(boxGeometry, chainMaterial);
-        boxbody.position.set(5, (N - i) * (size * 2 + 2 * space) + size * 2 + space, 0);
-        boxbody.linearDamping = 0.01;
-        boxbody.angularDamping = 0.01;
-        world.add(boxbody);
-        scene.add(boxMesh);
-        boxes.push(boxbody);
-        boxMeshes.push(boxMesh);
-
-        if (i != 0) {
-            // Connect this body to the last one
-            var c1 = new CANNON.PointToPointConstraint(boxbody, new CANNON.Vec3(-size, size + space, 0), last, new CANNON.Vec3(-size, -size - space, 0));
-            var c2 = new CANNON.PointToPointConstraint(boxbody, new CANNON.Vec3(size, size + space, 0), last, new CANNON.Vec3(size, -size - space, 0));
-            world.addConstraint(c1);
-            world.addConstraint(c2);
-        } else {
-            mass = 0.3;
-        }
-        last = boxbody;
-    }
+    //     if (i != 0) {
+    //         // Connect this body to the last one
+    //         var c1 = new CANNON.PointToPointConstraint(boxbody, new CANNON.Vec3(-size, size + space, 0), last, new CANNON.Vec3(-size, -size - space, 0));
+    //         var c2 = new CANNON.PointToPointConstraint(boxbody, new CANNON.Vec3(size, size + space, 0), last, new CANNON.Vec3(size, -size - space, 0));
+    //         world.addConstraint(c1);
+    //         world.addConstraint(c2);
+    //     } else {
+    //         mass = 0.3;
+    //     }
+    //     last = boxbody;
+    // }
 }
 
 function onWindowResize() {
@@ -172,11 +152,7 @@ function animate() {
             ballMeshes[i].quaternion.copy(balls[i].quaternion);
         }
 
-        // Update box positions
-        for (var i = 0; i < boxes.length; i++) {
-            boxMeshes[i].position.copy(boxes[i].position);
-            boxMeshes[i].quaternion.copy(boxes[i].quaternion);
-        }
+        boxes.updatePositions();
     }
 
     controls.update(Date.now() - time);
