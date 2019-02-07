@@ -12,7 +12,8 @@ document.body.appendChild(stats.dom);
 
 initCannon();
 init();
-animate();
+var lastTimestamp = 0;
+animate(lastTimestamp);
 
 function initCannon() {
     // Setup our world
@@ -107,29 +108,27 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-var performanceThen = performance.now();
-var delta = 1 / 60;
 var fires = 0;
-function animate() {
+function animate(timestamp) {
     stats.begin();
 
     requestAnimationFrame(animate);
 
     if (controls.enabled) {
-        world.step(delta);
+        world.step((timestamp - lastTimestamp) / 1000);
         balls.updatePositions();
         boxes.updatePositions();
 
-        if (fires < 750) {
+        if (fires < 1000) {
             // balls.fireFrom(playerBody, playerShape, world, scene);
             fires++;
         }
     }
 
-    controls.update(performance.now() - performanceThen);
+    controls.update(timestamp - lastTimestamp);
     renderer.render(scene, camera);
 
-    performanceThen = performance.now();
+    lastTimestamp = timestamp;
 
     stats.end();
 }
