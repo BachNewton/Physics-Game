@@ -1,4 +1,4 @@
-var sphereShape, sphereBody, world, physicsMaterial, walls = [], balls = [], ballMeshes = [];
+var sphereShape, sphereBody, world, walls = [], balls = [], ballMeshes = [];
 
 var camera, scene, renderer;
 var geometry;
@@ -17,27 +17,30 @@ animate();
 function initCannon() {
     // Setup our world
     world = new CANNON.World();
-    world.quatNormalizeSkip = 0;
-    world.quatNormalizeFast = false;
+
+    // world.quatNormalizeSkip = 0;
+    // world.quatNormalizeFast = false;
 
     var solver = new CANNON.GSSolver();
 
-    world.defaultContactMaterial.contactEquationStiffness = 1e9;
-    world.defaultContactMaterial.contactEquationRelaxation = 4;
+    // world.defaultContactMaterial.contactEquationStiffness = 1e9;
+    // world.defaultContactMaterial.contactEquationRelaxation = 4;
 
-    solver.iterations = 7;
-    solver.tolerance = 0.1;
+    // solver.iterations = 7;
+    // solver.tolerance = 0.1;
+
     var split = true;
     if (split)
         world.solver = new CANNON.SplitSolver(solver);
     else
         world.solver = solver;
 
-    world.gravity.set(0, -20, 0);
-    world.broadphase = new CANNON.NaiveBroadphase();
+    world.gravity.set(0, -10, 0);
+
+    // world.broadphase = new CANNON.NaiveBroadphase();
 
     // Create a slippery material (friction coefficient = 0.0)
-    physicsMaterial = new CANNON.Material("slipperyMaterial");
+    var physicsMaterial = new CANNON.Material("slipperyMaterial");
     var physicsContactMaterial = new CANNON.ContactMaterial(physicsMaterial,
         physicsMaterial,
         0.0, // friction coefficient
@@ -139,9 +142,9 @@ function onWindowResize() {
 
 var dt = 1 / 60;
 function animate() {
-    requestAnimationFrame(animate);
-
     stats.begin();
+
+    requestAnimationFrame(animate);
 
     if (controls.enabled) {
         world.step(dt);
@@ -163,10 +166,11 @@ function animate() {
 }
 
 var ballShape = new CANNON.Sphere(0.2);
-var ballGeometry = new THREE.SphereGeometry(ballShape.radius, 32, 32);
+var ballGeometry = new THREE.SphereGeometry(ballShape.radius, 16, 16);
 var shootDirection = new THREE.Vector3();
 var shootVelo = 15;
 var projector = new THREE.Projector();
+
 function getShootDir(targetVec) {
     var vector = targetVec;
     targetVec.set(0, 0, 1);
@@ -177,30 +181,34 @@ function getShootDir(targetVec) {
 
 var ballMaterial = new THREE.MeshLambertMaterial({ color: 'yellow' });
 
-window.addEventListener("click", function (e) {
+window.addEventListener("click", () => {
     if (controls.enabled == true) {
-        var x = sphereBody.position.x;
-        var y = sphereBody.position.y;
-        var z = sphereBody.position.z;
-        var ballBody = new CANNON.Body({ mass: 1 });
-        ballBody.addShape(ballShape);
-        var ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
-        ballMesh.castShadow = true;
-        ballMesh.receiveShadow = true;
-        world.add(ballBody);
-        scene.add(ballMesh);
-        balls.push(ballBody);
-        ballMeshes.push(ballMesh);
-        getShootDir(shootDirection);
-        ballBody.velocity.set(shootDirection.x * shootVelo,
-            shootDirection.y * shootVelo,
-            shootDirection.z * shootVelo);
-
-        // Move the ball outside the player sphere
-        x += shootDirection.x * (sphereShape.radius * 1.02 + ballShape.radius);
-        y += shootDirection.y * (sphereShape.radius * 1.02 + ballShape.radius);
-        z += shootDirection.z * (sphereShape.radius * 1.02 + ballShape.radius);
-        ballBody.position.set(x, y, z);
-        ballMesh.position.set(x, y, z);
+        shootBall();
     }
 });
+
+function shootBall() {
+    var x = sphereBody.position.x;
+    var y = sphereBody.position.y;
+    var z = sphereBody.position.z;
+    var ballBody = new CANNON.Body({ mass: 1 });
+    ballBody.addShape(ballShape);
+    var ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
+    ballMesh.castShadow = true;
+    ballMesh.receiveShadow = true;
+    world.add(ballBody);
+    scene.add(ballMesh);
+    balls.push(ballBody);
+    ballMeshes.push(ballMesh);
+    getShootDir(shootDirection);
+    ballBody.velocity.set(shootDirection.x * shootVelo,
+        shootDirection.y * shootVelo,
+        shootDirection.z * shootVelo);
+
+    // Move the ball outside the player sphere
+    x += shootDirection.x * (sphereShape.radius * 1.02 + ballShape.radius);
+    y += shootDirection.y * (sphereShape.radius * 1.02 + ballShape.radius);
+    z += shootDirection.z * (sphereShape.radius * 1.02 + ballShape.radius);
+    ballBody.position.set(x, y, z);
+    ballMesh.position.set(x, y, z);
+}
