@@ -8,6 +8,8 @@ var pointerLock = new PointerLock();
 var boxes = new Boxes();
 var balls = new Balls();
 
+var player = new Player(pointerLock);
+
 var stats = new Stats();
 stats.showPanel(0);
 document.body.appendChild(stats.dom);
@@ -47,8 +49,9 @@ function init() {
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
 
     scene = new THREE.Scene();
-
     scene.background = new THREE.Color('skyblue');
+
+    player.addTo(scene);
 
     var light = new Light();
     light.addLightTo(scene);
@@ -95,14 +98,18 @@ function animate(timestamp) {
         balls.updatePositions();
         boxes.updatePositions();
 
+        player.update(timestamp - lastTimestamp);
+
         if (fires < 750) {
             // balls.fireFrom(playerBody, playerShape, world, scene);
             fires++;
         }
     }
 
-    controls.update(timestamp - lastTimestamp);
-    renderer.render(scene, camera);
+    // controls.update(timestamp - lastTimestamp);
+
+    // renderer.render(scene, camera);
+    renderer.render(scene, player.camera);
 
     lastTimestamp = timestamp;
 
