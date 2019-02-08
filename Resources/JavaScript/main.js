@@ -1,7 +1,9 @@
-var playerShape, playerBody, world;
+var playerShape, playerBody, world, controls;
 
 var camera, scene, renderer;
 var geometry;
+
+var pointerLock = new PointerLock();
 
 var boxes = new Boxes();
 var balls = new Balls();
@@ -51,7 +53,7 @@ function init() {
     var light = new Light();
     light.addLightTo(scene);
 
-    controls = new PointerLockControls(camera, playerBody);
+    controls = new PointerLockControls(camera, playerBody, pointerLock);
     scene.add(controls.getObject());
 
     // floor
@@ -88,12 +90,12 @@ function animate(timestamp) {
 
     requestAnimationFrame(animate);
 
-    if (controls.enabled) {
+    if (pointerLock.locked) {
         world.step((timestamp - lastTimestamp) / 1000);
         balls.updatePositions();
         boxes.updatePositions();
 
-        if (fires < 1000) {
+        if (fires < 750) {
             // balls.fireFrom(playerBody, playerShape, world, scene);
             fires++;
         }
@@ -108,7 +110,7 @@ function animate(timestamp) {
 }
 
 window.addEventListener("click", () => {
-    if (controls.enabled == true) {
+    if (pointerLock.locked) {
         balls.fireFrom(playerBody, playerShape, world, scene);
     }
 });

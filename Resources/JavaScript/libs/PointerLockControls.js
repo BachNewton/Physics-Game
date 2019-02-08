@@ -2,10 +2,9 @@
  * @author mrdoob / http://mrdoob.com/
  * @author schteppe / https://github.com/schteppe
  */
-var PointerLockControls = function (camera, cannonBody) {
+var PointerLockControls = function (camera, cannonBody, pointerLock) {
     var velocityFactor = 0.2;
     var jumpVelocity = 15;
-    var scope = this;
 
     var pitchObject = new THREE.Object3D();
     pitchObject.add(camera);
@@ -46,7 +45,7 @@ var PointerLockControls = function (camera, cannonBody) {
 
     var onMouseMove = function (event) {
 
-        if (scope.enabled === false) return;
+        if (!pointerLock.locked) return;
 
         var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
         var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
@@ -138,7 +137,7 @@ var PointerLockControls = function (camera, cannonBody) {
     var euler = new THREE.Euler();
     this.update = function (delta) {
 
-        if (scope.enabled === false) return;
+        if (!pointerLock.locked) return;
 
         delta *= 0.1;
 
