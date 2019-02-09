@@ -39,7 +39,7 @@ function initThree() {
     light.addLightTo(scene);
 
     // floor
-    var geometry = new THREE.PlaneGeometry(300, 300, 50, 50);
+    var geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
     geometry.applyMatrix(new THREE.Matrix4().makeRotationX(- Math.PI / 2));
 
     var material = new THREE.MeshLambertMaterial({ color: 'green' });

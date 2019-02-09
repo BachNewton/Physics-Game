@@ -10,24 +10,24 @@ function Boxes() {
     };
 
     this.addTo = (world, scene) => {
-        const NUM_OF_BOXES = 100;
+        const NUM_OF_BOXES = 250;
 
         var material = new THREE.MeshLambertMaterial({ color: 'white' });
 
         for (var i = 0; i < NUM_OF_BOXES; i++) {
-            var x = (Math.random() - 0.5) * 100;
-            var y = Math.random() * 10 + 4;
-            var z = (Math.random() - 0.5) * 100;
+            var x = (Math.random() - 0.5) * 300;
+            var y = Math.random() * 50 + 5;
+            var z = (Math.random() - 0.5) * 300;
 
-            var width = Math.random() * 3 + 0.25;
-            var height = Math.random() * 3 + 0.25;
-            var depth = Math.random() * 3 + 0.25;
+            var width = Math.random() * 5 + 0.1;
+            var height = Math.random() * 5 + 0.1;
+            var depth = Math.random() * 5 + 0.1;
 
             var halfExtents = new CANNON.Vec3(width, height, depth);
             var boxShape = new CANNON.Box(halfExtents);
             var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
 
-            var mass = 2 * width * height * depth;
+            var mass = 3 * width * height * depth;
 
             var body = new CANNON.Body({ mass: mass });
             body.addShape(boxShape);

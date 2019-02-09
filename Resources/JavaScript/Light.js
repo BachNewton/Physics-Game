@@ -6,12 +6,11 @@ function Light() {
         var directionalLight = new THREE.DirectionalLight('white', 0.5);
         directionalLight.position.set(100, 100, 100);
         directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 512 * 4;  // default 512
-        directionalLight.shadow.mapSize.height = 512 * 4; // default 512
-        // directionalLight.shadow.camera.near = 0.5;    // default
-        directionalLight.shadow.camera.far = 300;     // default 500
-        directionalLight.shadow.camera.left = -100;
-        directionalLight.shadow.camera.right = 100;
+        directionalLight.shadow.mapSize.width = Math.pow(2, 11);
+        directionalLight.shadow.mapSize.height = Math.pow(2, 11);
+        directionalLight.shadow.camera.far = 300;
+        directionalLight.shadow.camera.left = -200;
+        directionalLight.shadow.camera.right = 200;
         directionalLight.shadow.camera.bottom = -100;
         directionalLight.shadow.camera.top = 100;
 
