@@ -2,7 +2,7 @@ function Boxes() {
     this.bodies = [];
     this.meshes = [];
 
-    this.updatePositions = () => {
+    this.update = () => {
         for (var i = 0; i < this.bodies.length; i++) {
             this.meshes[i].position.copy(this.bodies[i].position);
             this.meshes[i].quaternion.copy(this.bodies[i].quaternion);
@@ -48,35 +48,35 @@ function Boxes() {
     };
 }
 
-    // // Add linked boxes
-    // var size = 0.5;
-    // var he = new CANNON.Vec3(size, size, size * 0.1);
-    // var boxShape = new CANNON.Box(he);
-    // var mass = 0;
-    // var space = 0.1 * size;
-    // var N = 5, last;
-    // var boxGeometry = new THREE.BoxGeometry(he.x * 2, he.y * 2, he.z * 2);
-    // var chainMaterial = new THREE.MeshLambertMaterial({ color: 'red' });
-    // for (var i = 0; i < N; i++) {
-    //     var boxbody = new CANNON.Body({ mass: mass });
-    //     boxbody.addShape(boxShape);
-    //     var boxMesh = new THREE.Mesh(boxGeometry, chainMaterial);
-    //     boxbody.position.set(5, (N - i) * (size * 2 + 2 * space) + size * 2 + space, 0);
-    //     boxbody.linearDamping = 0.01;
-    //     boxbody.angularDamping = 0.01;
-    //     world.add(boxbody);
-    //     scene.add(boxMesh);
-    //     boxes.push(boxbody);
-    //     boxMeshes.push(boxMesh);
+// // Add linked boxes
+// var size = 0.5;
+// var he = new CANNON.Vec3(size, size, size * 0.1);
+// var boxShape = new CANNON.Box(he);
+// var mass = 0;
+// var space = 0.1 * size;
+// var N = 5, last;
+// var boxGeometry = new THREE.BoxGeometry(he.x * 2, he.y * 2, he.z * 2);
+// var chainMaterial = new THREE.MeshLambertMaterial({ color: 'red' });
+// for (var i = 0; i < N; i++) {
+//     var boxbody = new CANNON.Body({ mass: mass });
+//     boxbody.addShape(boxShape);
+//     var boxMesh = new THREE.Mesh(boxGeometry, chainMaterial);
+//     boxbody.position.set(5, (N - i) * (size * 2 + 2 * space) + size * 2 + space, 0);
+//     boxbody.linearDamping = 0.01;
+//     boxbody.angularDamping = 0.01;
+//     world.add(boxbody);
+//     scene.add(boxMesh);
+//     boxes.push(boxbody);
+//     boxMeshes.push(boxMesh);
 
-    //     if (i != 0) {
-    //         // Connect this body to the last one
-    //         var c1 = new CANNON.PointToPointConstraint(boxbody, new CANNON.Vec3(-size, size + space, 0), last, new CANNON.Vec3(-size, -size - space, 0));
-    //         var c2 = new CANNON.PointToPointConstraint(boxbody, new CANNON.Vec3(size, size + space, 0), last, new CANNON.Vec3(size, -size - space, 0));
-    //         world.addConstraint(c1);
-    //         world.addConstraint(c2);
-    //     } else {
-    //         mass = 0.3;
-    //     }
-    //     last = boxbody;
-    // }
+//     if (i != 0) {
+//         // Connect this body to the last one
+//         var c1 = new CANNON.PointToPointConstraint(boxbody, new CANNON.Vec3(-size, size + space, 0), last, new CANNON.Vec3(-size, -size - space, 0));
+//         var c2 = new CANNON.PointToPointConstraint(boxbody, new CANNON.Vec3(size, size + space, 0), last, new CANNON.Vec3(size, -size - space, 0));
+//         world.addConstraint(c1);
+//         world.addConstraint(c2);
+//     } else {
+//         mass = 0.3;
+//     }
+//     last = boxbody;
+// }

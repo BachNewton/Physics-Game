@@ -1,5 +1,31 @@
-function Player(pointerLock) {
-    this.speed = 0.0075;
+function Player(pointerLock, balls) {
+    this._getCannonBody = () => {
+        var mass = 5;
+        var radius = 1;
+
+        var shape = new CANNON.Sphere(radius);
+        var body = new CANNON.Body({ mass: mass });
+        body.addShape(shape);
+        body.position.set(0, 1, 0);
+
+        return body;
+    };
+
+    this._setObjectChildren = () => {
+        this.pitchObject.add(this.camera);
+        this.lookingAt.translateZ(-2);
+        this.pitchObject.add(this.lookingAt);
+        this.yawObject.add(this.pitchObject);
+        this.facing.translateZ(-1);
+        this.yawObject.add(this.facing);
+        this.leftSide.translateX(-1);
+        this.yawObject.add(this.leftSide);
+        this.yawObject.translateY(1);
+    };
+
+    this.body = this._getCannonBody();
+
+    this.speed = 0.01;
 
     this.input = {
         forward: false,
@@ -13,39 +39,75 @@ function Player(pointerLock) {
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
     this.yawObject = new THREE.Object3D();
     this.pitchObject = new THREE.Object3D();
+    this.facing = new THREE.Object3D();
+    this.leftSide = new THREE.Object3D();
+    this.lookingAt = new THREE.Object3D();
+    this._setObjectChildren();
 
-    this.pitchObject.add(this.camera);
-    this.pitchObject.translateY(2);
-    this.yawObject.add(this.pitchObject);
+    this.facingWorldPosition = new THREE.Vector3();
+    this.facingDirection = new THREE.Vector3();
+    this.leftSideWorldPosition = new THREE.Vector3();
+    this.leftSideDirection = new THREE.Vector3();
+    this.lookingAtWorldPosition = new THREE.Vector3();
+    this.lookingAtDirection = new THREE.Vector3();
 
-    this.addTo = (scene) => {
-        scene.add(this.yawObject);
+    this.updateLookingAtDirection = () => {
+        this.lookingAt.getWorldPosition(this.lookingAtWorldPosition);
+        this.lookingAtDirection.copy(this.lookingAtWorldPosition);
+        this.lookingAtDirection.sub(this.yawObject.position);
+        this.lookingAtDirection.normalize();
+    };
+
+    this.updateFacingDirection = () => {
+        this.facing.getWorldPosition(this.facingWorldPosition);
+        this.facingDirection.copy(this.facingWorldPosition);
+        this.facingDirection.sub(this.yawObject.position);
+        // Don't need to normalize, already length of 1
+    };
+
+    this.updateLeftSideDirection = () => {
+        this.leftSide.getWorldPosition(this.leftSideWorldPosition);
+        this.leftSideDirection.copy(this.leftSideWorldPosition);
+        this.leftSideDirection.sub(this.yawObject.position);
+        // Don't need to normalize, already length of 1
     };
 
     this.update = (delta) => {
+        this.updateFacingDirection();
+        this.updateLeftSideDirection();
+
+        this.facingDirection.multiplyScalar(this.speed * delta);
+        this.leftSideDirection.multiplyScalar(this.speed * delta);
+
         if (this.input.forward) {
-            this.yawObject.translateZ(-this.speed * delta);
+            this.body.velocity.x += this.facingDirection.x;
+            this.body.velocity.z += this.facingDirection.z;
         }
 
         if (this.input.left) {
-            this.yawObject.translateX(-this.speed * delta);
+            this.body.velocity.x += this.leftSideDirection.x;
+            this.body.velocity.z += this.leftSideDirection.z;
         }
 
         if (this.input.right) {
-            this.yawObject.translateX(this.speed * delta);
+            this.body.velocity.x += -this.leftSideDirection.x;
+            this.body.velocity.z += -this.leftSideDirection.z;
         }
 
         if (this.input.back) {
-            this.yawObject.translateZ(this.speed * delta);
+            this.body.velocity.x += -this.facingDirection.x;
+            this.body.velocity.z += -this.facingDirection.z;
         }
 
         if (this.input.up) {
-            this.yawObject.translateY(this.speed * delta);
+            this.body.velocity.y += this.speed * delta;
         }
 
         if (this.input.down) {
-            this.yawObject.translateY(-this.speed * delta);
+            this.body.velocity.y += -this.speed * delta;
         }
+
+        this.yawObject.position.copy(this.body.position);
     };
 
     document.addEventListener('keydown', (e) => {
@@ -93,4 +155,14 @@ function Player(pointerLock) {
             this.pitchObject.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.pitchObject.rotation.x));
         }
     }, false);
+
+    document.addEventListener('click', () => {
+        if (pointerLock.locked) {
+            this.updateLookingAtDirection();
+            this.lookingAtDirection.multiplyScalar(15);
+            this.lookingAtDirection.add(this.body.velocity);
+
+            balls.makeNewBall(1, this.lookingAtWorldPosition, this.lookingAtDirection);
+        }
+    });
 }

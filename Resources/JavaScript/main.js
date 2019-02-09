@@ -1,41 +1,26 @@
-var playerShape, playerBody, world, controls;
-
-var camera, scene, renderer;
-var geometry;
+var world = new CANNON.World();
+var scene = new THREE.Scene();
+var renderer;
 
 var pointerLock = new PointerLock();
-
 var boxes = new Boxes();
-var balls = new Balls();
-
-var player = new Player(pointerLock);
+var balls = new Balls(world, scene);
+var player = new Player(pointerLock, balls);
 
 var stats = new Stats();
 stats.showPanel(0);
 document.body.appendChild(stats.dom);
 
 initCannon();
-init();
+initThree();
 var lastTimestamp = 0;
 animate(lastTimestamp);
 
 function initCannon() {
-    // Setup our world
-    world = new CANNON.World();
-
     var solver = new CANNON.GSSolver();
     world.solver = new CANNON.SplitSolver(solver);
 
-    world.gravity.set(0, -10, 0);
-
-    // Create a player
-    var mass = 5, radius = 1.3;
-    playerShape = new CANNON.Sphere(radius);
-    playerBody = new CANNON.Body({ mass: mass });
-    playerBody.addShape(playerShape);
-    playerBody.position.set(0, 5, 0);
-    playerBody.linearDamping = 0.9;
-    world.add(playerBody);
+    world.add(player.body);
 
     // Create a plane
     var groundShape = new CANNON.Plane();
@@ -45,22 +30,16 @@ function initCannon() {
     world.add(groundBody);
 }
 
-function init() {
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
-
-    scene = new THREE.Scene();
+function initThree() {
     scene.background = new THREE.Color('skyblue');
 
-    player.addTo(scene);
+    scene.add(player.yawObject);
 
     var light = new Light();
     light.addLightTo(scene);
 
-    controls = new PointerLockControls(camera, playerBody, pointerLock);
-    scene.add(controls.getObject());
-
     // floor
-    geometry = new THREE.PlaneGeometry(300, 300, 50, 50);
+    var geometry = new THREE.PlaneGeometry(300, 300, 50, 50);
     geometry.applyMatrix(new THREE.Matrix4().makeRotationX(- Math.PI / 2));
 
     var material = new THREE.MeshLambertMaterial({ color: 'green' });
@@ -76,18 +55,15 @@ function init() {
 
     document.body.appendChild(renderer.domElement);
 
-    window.addEventListener('resize', onWindowResize, false);
-
     boxes.addTo(world, scene);
+
+    window.addEventListener('resize', () => {
+        player.camera.aspect = window.innerWidth / window.innerHeight;
+        player.camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }, false);
 }
 
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
-var fires = 0;
 function animate(timestamp) {
     stats.begin();
 
@@ -95,29 +71,15 @@ function animate(timestamp) {
 
     if (pointerLock.locked) {
         world.step((timestamp - lastTimestamp) / 1000);
-        balls.updatePositions();
-        boxes.updatePositions();
 
+        balls.update();
+        boxes.update();
         player.update(timestamp - lastTimestamp);
-
-        if (fires < 750) {
-            // balls.fireFrom(playerBody, playerShape, world, scene);
-            fires++;
-        }
     }
 
-    // controls.update(timestamp - lastTimestamp);
-
-    // renderer.render(scene, camera);
     renderer.render(scene, player.camera);
 
     lastTimestamp = timestamp;
 
     stats.end();
 }
-
-window.addEventListener("click", () => {
-    if (pointerLock.locked) {
-        balls.fireFrom(playerBody, playerShape, world, scene);
-    }
-});
