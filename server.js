@@ -24,8 +24,17 @@ io.on('connection', (socket) => {
     socket.on('connected', () => {
         console.log('A new player has connected to the serer with ID: ' + socket.id);
     });
-});
 
-setInterval(() => {
-    io.sockets.emit('message', 'hi');
-}, 1000);
+    socket.on('disconnect', () => {
+        console.log('A player has disconnected from the server with ID: ' + socket.id);
+        io.sockets.emit('disconnected', socket.id);
+    });
+
+    socket.on('player update', (data) => {
+        socket.broadcast.emit('player update', {
+            id: socket.id,
+            position: data.position,
+            rotation: data.rotation
+        });
+    });
+});

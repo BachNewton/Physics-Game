@@ -1,13 +1,14 @@
-var networking = new Networking();
-
 var world = new CANNON.World();
 var scene = new THREE.Scene();
 var renderer;
 
+var networking = new Networking();
+var otherPlayers = new OtherPlayers(networking.socket, scene);
+
 var pointerLock = new PointerLock();
 var boxes = new Boxes();
 var balls = new Balls(world, scene);
-var player = new Player(pointerLock, balls);
+var player = new Player(networking.socket, pointerLock, balls);
 
 var stats = new Stats();
 stats.showPanel(0);

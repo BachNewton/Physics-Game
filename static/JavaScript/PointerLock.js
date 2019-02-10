@@ -50,11 +50,11 @@ function PointerLock() {
                 }
             };
 
-            document.addEventListener('fullscreenchange', fullScreenChange, false);
-            document.addEventListener('mozfullscreenchange', fullScreenChange, false);
+            // document.addEventListener('fullscreenchange', fullScreenChange, false);
+            // document.addEventListener('mozfullscreenchange', fullScreenChange, false);
 
             element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
-            element.requestFullscreen();
+            // element.requestFullscreen();
 
             element.requestPointerLock();
         }, false);

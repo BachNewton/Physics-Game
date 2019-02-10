@@ -1,4 +1,4 @@
-function Player(pointerLock, balls) {
+function Player(socket, pointerLock, balls) {
     this._getCannonBody = () => {
         var mass = 5;
         var radius = 1;
@@ -108,6 +108,18 @@ function Player(pointerLock, balls) {
         }
 
         this.yawObject.position.copy(this.body.position);
+
+        socket.emit('player update', {
+            position: {
+                x: this.yawObject.position.x,
+                y: this.yawObject.position.y,
+                z: this.yawObject.position.z
+            },
+            rotation: {
+                x: this.pitchObject.rotation.x,
+                y: this.yawObject.rotation.y
+            }
+        });
     };
 
     document.addEventListener('keydown', (e) => {
