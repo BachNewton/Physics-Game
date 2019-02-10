@@ -156,7 +156,7 @@ function Player(pointerLock, balls) {
         }
     }, false);
 
-    document.addEventListener('click', () => {
+    document.addEventListener('mousedown', () => {
         if (pointerLock.locked) {
             this.updateLookingAtDirection();
             this.lookingAtDirection.multiplyScalar(15);
