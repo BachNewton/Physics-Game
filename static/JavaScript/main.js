@@ -1,3 +1,5 @@
+var networking = new Networking();
+
 var world = new CANNON.World();
 var scene = new THREE.Scene();
 var renderer;

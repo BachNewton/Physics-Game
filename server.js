@@ -19,3 +19,13 @@ app.get('/', function (request, response) {
 server.listen(5000, function () {
     console.log('Starting server on port 5000');
 });
+
+io.on('connection', (socket) => {
+    socket.on('connected', () => {
+        console.log('A new player has connected to the serer with ID: ' + socket.id);
+    });
+});
+
+setInterval(() => {
+    io.sockets.emit('message', 'hi');
+}, 1000);
