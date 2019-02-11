@@ -58,7 +58,7 @@ function initThree() {
 
     document.body.appendChild(renderer.domElement);
 
-    boxes.addToWorldAndScene();
+    boxes.createRandomBoxes();
 
     window.addEventListener('resize', () => {
         player.camera.aspect = window.innerWidth / window.innerHeight;

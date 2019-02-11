@@ -11,10 +11,8 @@ function Boxes(socket, world, scene) {
         }
     };
 
-    this.addToWorldAndScene = () => {
+    this.createRandomBoxes = () => {
         const NUM_OF_BOXES = 125;
-
-        var material = new THREE.MeshLambertMaterial({ color: 'white' });
 
         for (var i = 0; i < NUM_OF_BOXES; i++) {
             var x = (Math.random() - 0.5) * 300;
@@ -25,21 +23,8 @@ function Boxes(socket, world, scene) {
             var height = Math.random() * 5 + 0.1;
             var depth = Math.random() * 5 + 0.1;
 
-            var halfExtents = new CANNON.Vec3(width, height, depth);
-            var boxShape = new CANNON.Box(halfExtents);
-            var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
-
-            var mass = 3 * width * height * depth;
-
-            var body = new CANNON.Body({ mass: mass });
-            body.addShape(boxShape);
-
-            var mesh = new THREE.Mesh(boxGeometry, material);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-
-            body.position.set(x, y, z);
-            mesh.position.set(x, y, z);
+            var body = this.getNewBody(width, height, depth, { x: x, y: y, z: z });
+            var mesh = this.getNewMeshFromBody(body);
 
             this.bodies.push(body);
             this.meshes.push(mesh);
@@ -47,6 +32,8 @@ function Boxes(socket, world, scene) {
             world.add(body);
             scene.add(mesh);
         }
+
+        // Send these boxes to the server for the other players
     };
 
     socket.on('give boxes to', (id) => {
@@ -109,6 +96,10 @@ function Boxes(socket, world, scene) {
     });
 
     this.getNewBody = (width, height, depth, position, quaternion, velocity, angularVelocity) => {
+        quaternion = quaternion || new CANNON.Quaternion();
+        velocity = velocity || new CANNON.Vec3();
+        angularVelocity = angularVelocity || new CANNON.Vec3();
+
         var halfExtents = new CANNON.Vec3(width / 2, height / 2, depth / 2);
         var boxShape = new CANNON.Box(halfExtents);
 
