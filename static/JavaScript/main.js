@@ -6,7 +6,7 @@ var networking = new Networking();
 var otherPlayers = new OtherPlayers(networking.socket, scene);
 
 var pointerLock = new PointerLock();
-var boxes = new Boxes();
+var boxes = new Boxes(networking.socket, world, scene);
 var balls = new Balls(world, scene);
 var player = new Player(networking.socket, pointerLock, balls);
 
@@ -16,8 +16,8 @@ document.body.appendChild(stats.dom);
 
 initCannon();
 initThree();
-var lastTimestamp = 0;
-animate(lastTimestamp);
+var lastTimestamp = -1 / 60;
+animate(0);
 
 function initCannon() {
     var solver = new CANNON.GSSolver();
@@ -58,7 +58,7 @@ function initThree() {
 
     document.body.appendChild(renderer.domElement);
 
-    boxes.addTo(world, scene);
+    boxes.addToWorldAndScene();
 
     window.addEventListener('resize', () => {
         player.camera.aspect = window.innerWidth / window.innerHeight;
@@ -72,13 +72,11 @@ function animate(timestamp) {
 
     requestAnimationFrame(animate);
 
-    if (pointerLock.locked) {
-        world.step((timestamp - lastTimestamp) / 1000);
+    world.step((timestamp - lastTimestamp) / 1000);
 
-        balls.update();
-        boxes.update();
-        player.update(timestamp - lastTimestamp);
-    }
+    balls.update();
+    boxes.update();
+    player.update(timestamp - lastTimestamp);
 
     renderer.render(scene, player.camera);
 

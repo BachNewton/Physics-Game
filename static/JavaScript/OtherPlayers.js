@@ -21,7 +21,7 @@ function OtherPlayers(socket, scene) {
         var bodyMaterial = new THREE.MeshLambertMaterial({ color: 'purple' });
         var bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial);
 
-        var eyeGeometry = new THREE.SphereGeometry(0.1, 5, 5);
+        var eyeGeometry = new THREE.SphereGeometry(0.1, 6, 6);
         var eyeMaterial = new THREE.MeshLambertMaterial({ color: 'white' });
         var leftEyeMesh = new THREE.Mesh(eyeGeometry, eyeMaterial);
         var rightEyeMesh = new THREE.Mesh(eyeGeometry, eyeMaterial);

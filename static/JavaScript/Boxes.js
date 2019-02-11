@@ -1,6 +1,8 @@
-function Boxes() {
+function Boxes(socket, world, scene) {
     this.bodies = [];
     this.meshes = [];
+
+    this.boxMaterial = new THREE.MeshLambertMaterial({ color: 'white' });
 
     this.update = () => {
         for (var i = 0; i < this.bodies.length; i++) {
@@ -9,8 +11,8 @@ function Boxes() {
         }
     };
 
-    this.addTo = (world, scene) => {
-        const NUM_OF_BOXES = 250;
+    this.addToWorldAndScene = () => {
+        const NUM_OF_BOXES = 125;
 
         var material = new THREE.MeshLambertMaterial({ color: 'white' });
 
@@ -45,6 +47,97 @@ function Boxes() {
             world.add(body);
             scene.add(mesh);
         }
+    };
+
+    socket.on('give boxes to', (id) => {
+        console.log('The server has asked me to give my boxes to ID: ' + id);
+
+        var boxesForServer = [];
+
+        for (var body of this.bodies) {
+            boxesForServer.push({
+                position: {
+                    x: body.position.x,
+                    y: body.position.y,
+                    z: body.position.z
+                },
+                quaternion: {
+                    w: body.quaternion.w,
+                    x: body.quaternion.x,
+                    y: body.quaternion.y,
+                    z: body.quaternion.z
+                },
+                velocity: {
+                    x: body.velocity.x,
+                    y: body.velocity.y,
+                    z: body.velocity.z
+                },
+                angularVelocity: {
+                    x: body.angularVelocity.x,
+                    y: body.angularVelocity.y,
+                    z: body.angularVelocity.z
+                },
+                shape: {
+                    width: body.shapes[0].halfExtents.x * 2,
+                    height: body.shapes[0].halfExtents.y * 2,
+                    depth: body.shapes[0].halfExtents.z * 2
+                }
+            });
+        }
+
+        console.log('I am giving these boxes to the server:', boxesForServer);
+
+        socket.emit('give boxes to', {
+            id: id,
+            boxes: boxesForServer
+        });
+    });
+
+    socket.on('receive boxes', (boxes) => {
+        console.log('I have recived boxes:', boxes);
+
+        for (var box of boxes) {
+            var body = this.getNewBody(box.shape.width, box.shape.height, box.shape.depth, box.position, box.quaternion, box.velocity, box.angularVelocity);
+            var mesh = this.getNewMeshFromBody(body);
+
+            this.bodies.push(body);
+            this.meshes.push(mesh);
+
+            world.add(body);
+            scene.add(mesh);
+        }
+    });
+
+    this.getNewBody = (width, height, depth, position, quaternion, velocity, angularVelocity) => {
+        var halfExtents = new CANNON.Vec3(width / 2, height / 2, depth / 2);
+        var boxShape = new CANNON.Box(halfExtents);
+
+        var body = new CANNON.Body({ mass: 1.5 * width * height * depth });
+        body.addShape(boxShape);
+
+        body.position.set(position.x, position.y, position.z);
+        body.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+        body.velocity.set(velocity.x, velocity.y, velocity.z);
+        body.angularVelocity.set(angularVelocity.x, angularVelocity.y, angularVelocity.z);
+
+        return body;
+    };
+
+    this.getNewMeshFromBody = (body) => {
+        var width = body.shapes[0].halfExtents.x * 2;
+        var height = body.shapes[0].halfExtents.y * 2;
+        var depth = body.shapes[0].halfExtents.z * 2;
+
+        var geometry = new THREE.BoxGeometry(width, height, depth);
+        var mesh = new THREE.Mesh(geometry, this.boxMaterial);
+
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
+        mesh.position.copy(body.position);
+        mesh.quaternion.copy(body.quaternion);
+
+        return mesh;
     };
 }
 
