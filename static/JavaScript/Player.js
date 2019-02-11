@@ -51,6 +51,8 @@ function Player(socket, pointerLock, balls) {
     this.lookingAtWorldPosition = new THREE.Vector3();
     this.lookingAtDirection = new THREE.Vector3();
 
+    this.pitchObjectWorldQuaternion = new THREE.Quaternion();
+
     this.updateLookingAtDirection = () => {
         this.lookingAt.getWorldPosition(this.lookingAtWorldPosition);
         this.lookingAtDirection.copy(this.lookingAtWorldPosition);
@@ -109,15 +111,19 @@ function Player(socket, pointerLock, balls) {
 
         this.yawObject.position.copy(this.body.position);
 
+        this.pitchObject.getWorldQuaternion(this.pitchObjectWorldQuaternion);
+
         socket.emit('player update', {
             position: {
                 x: this.yawObject.position.x,
                 y: this.yawObject.position.y,
                 z: this.yawObject.position.z
             },
-            rotation: {
-                x: this.pitchObject.rotation.x,
-                y: this.yawObject.rotation.y
+            quaternion: {
+                w: this.pitchObjectWorldQuaternion.w,
+                x: this.pitchObjectWorldQuaternion.x,
+                y: this.pitchObjectWorldQuaternion.y,
+                z: this.pitchObjectWorldQuaternion.z
             }
         });
     };

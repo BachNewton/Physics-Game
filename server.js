@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('player update', {
             id: socket.id,
             position: data.position,
-            rotation: data.rotation
+            quaternion: data.quaternion
         });
     });
 });
