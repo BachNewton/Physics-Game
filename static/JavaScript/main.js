@@ -8,21 +8,28 @@ var otherPlayers = new OtherPlayers(networking.socket, scene);
 var pointerLock = new PointerLock();
 var boxes = new Boxes(networking.socket, world, scene);
 var balls = new Balls(world, scene);
+var car = new Car(world, scene);
 var player = new Player(networking.socket, pointerLock, balls);
 
 var stats = new Stats();
 stats.showPanel(0);
 document.body.appendChild(stats.dom);
 
-initCannon();
-initThree();
-networking.socket.emit('boxes request');
+init();
 var lastTimestamp = -1 / 60;
 animate(0);
+
+function init() {
+    initCannon();
+    initThree();
+    networking.socket.emit('boxes request');
+    car.addToGame();
+}
 
 function initCannon() {
     var solver = new CANNON.GSSolver();
     world.solver = new CANNON.SplitSolver(solver);
+    world.gravity.set(0, -10, 0);
 
     world.add(player.body);
 
@@ -75,6 +82,7 @@ function animate(timestamp) {
 
     balls.update();
     boxes.update();
+    car.update();
     player.update(timestamp - lastTimestamp);
 
     renderer.render(scene, player.camera);
