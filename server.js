@@ -20,23 +20,20 @@ server.listen(5000, function () {
     console.log('Starting server on port 5000');
 });
 
+var boxes = require('./js/Boxes');
+
 io.on('connection', (socket) => {
     socket.on('connected', () => {
         console.log('A new player has connected to the serer with ID: ' + socket.id);
-
-        // Ask for a player (that is not THIS player) to give me their boxes
-        for (id in io.sockets.sockets) {
-            if (id !== socket.id) {
-                console.log('ID: ' + socket.id + ' is requesting boxes from ID: ' + id);
-                io.sockets.sockets[id].emit('give boxes to', socket.id);
-                break;
-            }
-        }
     });
 
     socket.on('disconnect', () => {
-        console.log('A player has disconnected from the server with ID: ' + socket.id);
+        console.log('A player has disconnected from the server with ID:', socket.id);
         io.sockets.emit('disconnected', socket.id);
+    });
+
+    socket.on('boxes request', () => {
+        socket.emit('boxes', boxes.getBoxes());
     });
 
     socket.on('player update', (data) => {
@@ -45,10 +42,5 @@ io.on('connection', (socket) => {
             position: data.position,
             quaternion: data.quaternion
         });
-    });
-
-    socket.on('give boxes to', (data) => {
-        console.log('ID: ' + socket.id + ' is giving their boxes to ID: ' + data.id);
-        io.sockets.sockets[data.id].emit('receive boxes', data.boxes);
     });
 });

@@ -16,6 +16,7 @@ document.body.appendChild(stats.dom);
 
 initCannon();
 initThree();
+networking.socket.emit('boxes request');
 var lastTimestamp = -1 / 60;
 animate(0);
 
@@ -57,8 +58,6 @@ function initThree() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     document.body.appendChild(renderer.domElement);
-
-    boxes.createRandomBoxes();
 
     window.addEventListener('resize', () => {
         player.camera.aspect = window.innerWidth / window.innerHeight;
