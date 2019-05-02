@@ -30,6 +30,7 @@ function initCannon() {
     var solver = new CANNON.GSSolver();
     world.solver = new CANNON.SplitSolver(solver);
     world.gravity.set(0, -10, 0);
+    world.defaultContactMaterial.friction = 0.3;
 
     world.add(player.body);
 

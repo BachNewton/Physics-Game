@@ -1,4 +1,5 @@
 function Car(world, scene) {
+    this.MAX_FORCE = 15;
     this.width = 1;
     this.height = 0.75;
     this.depth = 2;
@@ -103,25 +104,34 @@ function Car(world, scene) {
         this.mesh.quaternion.copy(this.body.quaternion);
 
         for (var i = 0; i < this.wheelMeshes.length; i++) {
-            var x = this.car.wheelBodies[i].position.x;
-            var y = this.car.wheelBodies[i].position.y;
-            var z = this.car.wheelBodies[i].position.z;
-
-            this.wheelMeshes[i].position.set(x, y, z);
-
-            var w = this.car.wheelBodies[i].quaternion.w;
-            x = this.car.wheelBodies[i].quaternion.x;
-            y = this.car.wheelBodies[i].quaternion.y;
-            z = this.car.wheelBodies[i].quaternion.z;
-
-            this.wheelMeshes[i].quaternion.set(w, x, y, z);
+            this.wheelMeshes[i].position.copy(this.car.wheelBodies[i].position);
+            this.wheelMeshes[i].quaternion.copy(this.car.wheelBodies[i].quaternion);
         }
     };
 
     document.addEventListener('keydown', (e) => {
         if (e.code === 'ArrowUp') {
-            this.car.setWheelForce(10, 2);
-            this.car.setWheelForce(10, 3);
+            this.car.setWheelForce(this.MAX_FORCE, 2);
+            this.car.setWheelForce(-this.MAX_FORCE, 3);
+        } else if (e.code === 'ArrowLeft') {
+            this.car.setSteeringValue(Math.PI / 3, 0);
+            this.car.setSteeringValue(Math.PI / 3, 1);
+        } else if (e.code === 'ArrowRight') {
+            this.car.setSteeringValue(-Math.PI / 3, 0);
+            this.car.setSteeringValue(-Math.PI / 3, 1);
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (e.code === 'ArrowUp') {
+            this.car.setWheelForce(0, 2);
+            this.car.setWheelForce(0, 3);
+        } else if (e.code === 'ArrowLeft') {
+            this.car.setSteeringValue(0, 0);
+            this.car.setSteeringValue(0, 1);
+        } else if (e.code === 'ArrowRight') {
+            this.car.setSteeringValue(0, 0);
+            this.car.setSteeringValue(0, 1);
         }
     });
 }
