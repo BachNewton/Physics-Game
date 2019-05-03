@@ -6768,8 +6768,8 @@ RigidVehicle.prototype.setSteeringValue = function(value, wheelIndex){
         y = axis.y;
     this.constraints[wheelIndex].axisA.set(
         c*x -s*y,
-        s*x +c*y,
-        0
+        0,
+        s*x +c*y
     );
 };
 

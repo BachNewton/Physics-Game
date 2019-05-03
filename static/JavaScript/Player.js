@@ -5,7 +5,6 @@ function Player(socket, pointerLock, balls) {
 
         var shape = new CANNON.Sphere(radius);
         var body = new CANNON.Body({ mass: mass });
-        body.angularDamping = 0.99;
         body.addShape(shape);
         body.position.set(0, 1, 0);
 

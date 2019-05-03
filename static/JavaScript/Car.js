@@ -1,9 +1,11 @@
 function Car(world, scene) {
     this.MAX_FORCE = 15;
+    this.MAX_TURN = Math.PI / 5;
     this.width = 1;
     this.height = 0.75;
     this.depth = 2;
-    this.mass = 15;
+    this.mass = 20;
+    this.wheelMass = 5;
     this.body;
     this.mesh;
     this.wheelRadius = 0.3;
@@ -34,7 +36,7 @@ function Car(world, scene) {
     };
 
     this.getNewWheelMesh = () => {
-        var geometry = new THREE.SphereGeometry(this.wheelRadius, 5, 5);
+        var geometry = new THREE.CylinderGeometry(this.wheelRadius, this.wheelRadius, 0.25);
         var mesh = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: 'pink' }));
 
         mesh.castShadow = true;
@@ -53,7 +55,7 @@ function Car(world, scene) {
         var downShifted = this.height / 2;
         var down = new CANNON.Vec3(0, -1, 0);
 
-        var frontLeftWheel = new CANNON.Body({ mass: 1 });
+        var frontLeftWheel = new CANNON.Body({ mass: this.wheelMass });
         frontLeftWheel.addShape(wheelShape);
         this.car.addWheel({
             body: frontLeftWheel,
@@ -62,7 +64,7 @@ function Car(world, scene) {
             direction: down
         });
 
-        var frontRightWheel = new CANNON.Body({ mass: 1 });
+        var frontRightWheel = new CANNON.Body({ mass: this.wheelMass });
         frontRightWheel.addShape(wheelShape);
         this.car.addWheel({
             body: frontRightWheel,
@@ -71,7 +73,7 @@ function Car(world, scene) {
             direction: down
         });
 
-        var backLeftWheel = new CANNON.Body({ mass: 1 });
+        var backLeftWheel = new CANNON.Body({ mass: this.wheelMass });
         backLeftWheel.addShape(wheelShape);
         this.car.addWheel({
             body: backLeftWheel,
@@ -80,7 +82,7 @@ function Car(world, scene) {
             direction: down
         });
 
-        var backRightWheel = new CANNON.Body({ mass: 1 });
+        var backRightWheel = new CANNON.Body({ mass: this.wheelMass });
         backRightWheel.addShape(wheelShape);
         this.car.addWheel({
             body: backRightWheel,
@@ -106,30 +108,35 @@ function Car(world, scene) {
         for (var i = 0; i < this.wheelMeshes.length; i++) {
             this.wheelMeshes[i].position.copy(this.car.wheelBodies[i].position);
             this.wheelMeshes[i].quaternion.copy(this.car.wheelBodies[i].quaternion);
+            this.wheelMeshes[i].rotateZ(Math.PI / 2);
         }
     };
 
     document.addEventListener('keydown', (e) => {
         if (e.code === 'ArrowUp') {
+            this.car.setWheelForce(this.MAX_FORCE, 0);
+            this.car.setWheelForce(-this.MAX_FORCE, 1);
             this.car.setWheelForce(this.MAX_FORCE, 2);
             this.car.setWheelForce(-this.MAX_FORCE, 3);
         } else if (e.code === 'ArrowLeft') {
-            this.car.setSteeringValue(Math.PI / 3, 0);
-            this.car.setSteeringValue(Math.PI / 3, 1);
+            this.car.setSteeringValue(-this.MAX_TURN, 0);
+            this.car.setSteeringValue(-this.MAX_TURN, 1);
         } else if (e.code === 'ArrowRight') {
-            this.car.setSteeringValue(-Math.PI / 3, 0);
-            this.car.setSteeringValue(-Math.PI / 3, 1);
+            this.car.setSteeringValue(this.MAX_TURN, 0);
+            this.car.setSteeringValue(this.MAX_TURN, 1);
+        } else if (e.code === 'ArrowDown') {
+            this.car.setWheelForce(-this.MAX_FORCE, 2);
+            this.car.setWheelForce(this.MAX_FORCE, 3);
         }
     });
 
     document.addEventListener('keyup', (e) => {
-        if (e.code === 'ArrowUp') {
+        if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
+            this.car.setWheelForce(0, 0);
+            this.car.setWheelForce(0, 1);
             this.car.setWheelForce(0, 2);
             this.car.setWheelForce(0, 3);
-        } else if (e.code === 'ArrowLeft') {
-            this.car.setSteeringValue(0, 0);
-            this.car.setSteeringValue(0, 1);
-        } else if (e.code === 'ArrowRight') {
+        } else if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
             this.car.setSteeringValue(0, 0);
             this.car.setSteeringValue(0, 1);
         }
