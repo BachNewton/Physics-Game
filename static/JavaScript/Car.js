@@ -114,31 +114,33 @@ function Car(world, scene) {
 
     document.addEventListener('keydown', (e) => {
         if (e.code === 'ArrowUp') {
-            this.car.setWheelForce(this.MAX_FORCE, 0);
-            this.car.setWheelForce(-this.MAX_FORCE, 1);
-            this.car.setWheelForce(this.MAX_FORCE, 2);
-            this.car.setWheelForce(-this.MAX_FORCE, 3);
+            this.setWheelForce(this.MAX_FORCE);
         } else if (e.code === 'ArrowLeft') {
-            this.car.setSteeringValue(-this.MAX_TURN, 0);
-            this.car.setSteeringValue(-this.MAX_TURN, 1);
+            this.setSteeringAngle(-this.MAX_TURN);
         } else if (e.code === 'ArrowRight') {
-            this.car.setSteeringValue(this.MAX_TURN, 0);
-            this.car.setSteeringValue(this.MAX_TURN, 1);
+            this.setSteeringAngle(this.MAX_TURN);
         } else if (e.code === 'ArrowDown') {
-            this.car.setWheelForce(-this.MAX_FORCE, 2);
-            this.car.setWheelForce(this.MAX_FORCE, 3);
+            this.setWheelForce(-this.MAX_FORCE);
         }
     });
 
+    this.setWheelForce = (force) => {
+        this.car.setWheelForce(force, 0);
+        this.car.setWheelForce(-force, 1);
+        this.car.setWheelForce(force, 2);
+        this.car.setWheelForce(-force, 3);
+    };
+
+    this.setSteeringAngle = (angle) => {
+        this.car.setSteeringValue(angle, 0);
+        this.car.setSteeringValue(angle, 1);
+    };
+
     document.addEventListener('keyup', (e) => {
         if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
-            this.car.setWheelForce(0, 0);
-            this.car.setWheelForce(0, 1);
-            this.car.setWheelForce(0, 2);
-            this.car.setWheelForce(0, 3);
+            this.setWheelForce(0);
         } else if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
-            this.car.setSteeringValue(0, 0);
-            this.car.setSteeringValue(0, 1);
+            this.setSteeringAngle(0);
         }
     });
 }
