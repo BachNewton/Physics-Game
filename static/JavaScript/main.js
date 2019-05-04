@@ -2,6 +2,8 @@ var world = new CANNON.World();
 var scene = new THREE.Scene();
 var renderer;
 
+var gamepadManager = new GamepadManager();
+
 var networking = new Networking();
 var otherPlayers = new OtherPlayers(networking.socket, scene);
 
@@ -82,6 +84,7 @@ function animate(timestamp) {
 
     world.step((timestamp - lastTimestamp) / 1000);
 
+    gamepadManager.update();
     balls.update();
     boxes.update();
     car.update();
