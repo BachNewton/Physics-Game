@@ -1,5 +1,5 @@
 function Car(world, scene) {
-    this.MAX_FORCE = 15;
+    this.MAX_FORCE = 10;
     this.MAX_TURN = Math.PI / 5;
     this.width = 1;
     this.height = 0.75;
@@ -138,6 +138,22 @@ function Car(world, scene) {
     };
 
     this.setSteeringAngle = (angle) => {
+        this.car.setSteeringValue(angle, 0);
+        this.car.setSteeringValue(angle, 1);
+    };
+
+    this.accelerate = (percent) => {
+        var force = percent * this.MAX_FORCE;
+
+        this.car.applyWheelForce(force, 0);
+        this.car.applyWheelForce(-force, 1);
+        this.car.applyWheelForce(force, 2);
+        this.car.applyWheelForce(-force, 3);
+    };
+
+    this.turn = (percent) => {
+        var angle = percent * this.MAX_TURN;
+
         this.car.setSteeringValue(angle, 0);
         this.car.setSteeringValue(angle, 1);
     };

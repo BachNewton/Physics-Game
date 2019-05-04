@@ -11,7 +11,7 @@ var pointerLock = new PointerLock();
 var boxes = new Boxes(networking.socket, world, scene);
 var balls = new Balls(world, scene);
 var car = new Car(world, scene);
-var player = new Player(networking.socket, pointerLock, balls);
+// var player = new Player(networking.socket, pointerLock, balls);
 
 var stats = new Stats();
 stats.showPanel(0);
@@ -33,7 +33,7 @@ function initCannon() {
     world.solver = new CANNON.SplitSolver(solver);
     world.gravity.set(0, -10, 0);
 
-    world.add(player.body);
+    // world.add(player.body);
 
     // Create a plane
     var groundShape = new CANNON.Plane();
@@ -46,7 +46,7 @@ function initCannon() {
 function initThree() {
     scene.background = new THREE.Color('skyblue');
 
-    scene.add(player.yawObject);
+    // scene.add(player.yawObject);
 
     var light = new Light();
     light.addLightTo(scene);
@@ -69,8 +69,8 @@ function initThree() {
     document.body.appendChild(renderer.domElement);
 
     window.addEventListener('resize', () => {
-        player.camera.aspect = window.innerWidth / window.innerHeight;
-        player.camera.updateProjectionMatrix();
+        // player.camera.aspect = window.innerWidth / window.innerHeight;
+        // player.camera.updateProjectionMatrix();
         car.camera.aspect = window.innerWidth / window.innerHeight;
         car.camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -87,10 +87,13 @@ function animate(timestamp) {
     world.step(deltaTime / 1000);
 
     gamepadManager.update();
+    car.accelerate(gamepadManager.controller.rightTrigger - gamepadManager.controller.leftTrigger);
+    var turnPercent = gamepadManager.getMovementVector() || { x: 0 };
+    car.turn(turnPercent.x);
     balls.update();
     boxes.update();
     car.update();
-    player.update(deltaTime);
+    // player.update(deltaTime);
 
     // renderer.render(scene, player.camera);
     renderer.render(scene, car.camera);
