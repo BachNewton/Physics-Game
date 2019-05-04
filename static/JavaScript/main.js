@@ -82,13 +82,15 @@ function animate(timestamp) {
 
     requestAnimationFrame(animate);
 
-    world.step((timestamp - lastTimestamp) / 1000);
+    var deltaTime = Math.min(timestamp - lastTimestamp, 100);
+
+    world.step(deltaTime / 1000);
 
     gamepadManager.update();
     balls.update();
     boxes.update();
     car.update();
-    player.update(timestamp - lastTimestamp);
+    player.update(deltaTime);
 
     // renderer.render(scene, player.camera);
     renderer.render(scene, car.camera);
