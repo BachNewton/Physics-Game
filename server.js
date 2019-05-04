@@ -43,4 +43,12 @@ io.on('connection', (socket) => {
             quaternion: data.quaternion
         });
     });
+
+    socket.on('car update', (data) => {
+        socket.broadcast.emit('car update', {
+            id: socket.id,
+            body: data.body,
+            wheels: data.wheels
+        });
+    });
 });

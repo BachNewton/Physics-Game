@@ -1,5 +1,5 @@
 function Car(world, scene) {
-    this.MAX_FORCE = 10;
+    this.MAX_FORCE = 15;
     this.MAX_TURN = Math.PI / 5;
     this.width = 1;
     this.height = 0.75;
@@ -13,6 +13,7 @@ function Car(world, scene) {
     this.car;
     this.startingPosition = { x: 0, y: 0.5, z: -3 };
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
+    this.otherCars = {};
 
     this.getNewBody = () => {
         var halfExtents = new CANNON.Vec3(this.width / 2, this.height / 2, this.depth / 2);
@@ -56,7 +57,7 @@ function Car(world, scene) {
         this.mesh = this.getNewMesh();
 
         this.car = new CANNON.RigidVehicle({ chassisBody: this.body });
-        var axisWidth = this.width * 1.75;
+        var axisWidth = this.width * 2.5;
         var wheelShape = new CANNON.Sphere(this.wheelRadius);
         var downShifted = this.height / 2;
         var down = new CANNON.Vec3(0, -1, 0);
@@ -111,11 +112,44 @@ function Car(world, scene) {
         this.mesh.position.copy(this.body.position);
         this.mesh.quaternion.copy(this.body.quaternion);
 
+        var wheelsForServer = [];
+
         for (var i = 0; i < this.wheelMeshes.length; i++) {
             this.wheelMeshes[i].position.copy(this.car.wheelBodies[i].position);
             this.wheelMeshes[i].quaternion.copy(this.car.wheelBodies[i].quaternion);
             this.wheelMeshes[i].rotateZ(Math.PI / 2);
+
+            wheelsForServer.push({
+                position: {
+                    x: this.wheelMeshes[i].position.x,
+                    y: this.wheelMeshes[i].position.y,
+                    z: this.wheelMeshes[i].position.z
+                },
+                quaternion: {
+                    w: this.wheelMeshes[i].quaternion.w,
+                    x: this.wheelMeshes[i].quaternion.x,
+                    y: this.wheelMeshes[i].quaternion.y,
+                    z: this.wheelMeshes[i].quaternion.z,
+                }
+            });
         }
+
+        networking.socket.emit('car update', {
+            body: {
+                position: {
+                    x: this.body.position.x,
+                    y: this.body.position.y,
+                    z: this.body.position.z
+                },
+                quaternion: {
+                    w: this.body.quaternion.w,
+                    x: this.body.quaternion.x,
+                    y: this.body.quaternion.y,
+                    z: this.body.quaternion.z,
+                }
+            },
+            wheels: wheelsForServer
+        });
     };
 
     document.addEventListener('keydown', (e) => {
@@ -165,4 +199,46 @@ function Car(world, scene) {
             this.setSteeringAngle(0);
         }
     });
+
+    networking.socket.on('car update', (data) => {
+        this.otherCarUpdate(data);
+    });
+
+    this.otherCarUpdate = (data) => {
+        if (data.id in this.otherCars) {
+            var otherCar = this.otherCars[data.id];
+
+            otherCar.body.position.copy(data.body.position);
+            otherCar.body.quaternion.copy(data.body.quaternion);
+
+            for (var i = 0; i < 4; i++) {
+                otherCar.wheels[i].position.copy(data.wheels[i].position);
+                otherCar.wheels[i].quaternion.copy(data.wheels[i].quaternion);
+            }
+        } else {
+            this.makeNewOtherCar(data.id);
+            this.otherCarUpdate(data);
+        }
+    };
+
+    this.makeNewOtherCar = (id) => {
+        var otherCar = {
+            body: new THREE.Mesh(new THREE.BoxGeometry(this.width, this.height, this.depth), new THREE.MeshLambertMaterial({ color: 'orange' })),
+            wheels: []
+        };
+
+        otherCar.body.castShadow = true;
+        otherCar.body.receiveShadow = true;
+
+        scene.add(otherCar.body);
+
+        for (var i = 0; i < 4; i++) {
+            otherCar.wheels.push(new THREE.Mesh(new THREE.CylinderGeometry(this.wheelRadius, this.wheelRadius, 0.25), new THREE.MeshLambertMaterial({ color: 'pink' })));
+            otherCar.wheels[i].castShadow = true;
+            otherCar.wheels[i].receiveShadow = true;
+            scene.add(otherCar.wheels[i]);
+        }
+
+        this.otherCars[id] = otherCar;
+    };
 }
