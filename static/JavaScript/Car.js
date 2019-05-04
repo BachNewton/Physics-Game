@@ -12,6 +12,7 @@ function Car(world, scene) {
     this.wheelMeshes = [];
     this.car;
     this.startingPosition = { x: 0, y: 0.5, z: -3 };
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
 
     this.getNewBody = () => {
         var halfExtents = new CANNON.Vec3(this.width / 2, this.height / 2, this.depth / 2);
@@ -31,6 +32,11 @@ function Car(world, scene) {
 
         mesh.castShadow = true;
         mesh.receiveShadow = true;
+
+        mesh.add(this.camera);
+        this.camera.translateZ(5);
+        this.camera.translateY(3);
+        this.camera.rotateX(-Math.PI / 8);
 
         return mesh;
     };

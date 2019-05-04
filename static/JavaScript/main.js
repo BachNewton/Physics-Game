@@ -69,6 +69,8 @@ function initThree() {
     window.addEventListener('resize', () => {
         player.camera.aspect = window.innerWidth / window.innerHeight;
         player.camera.updateProjectionMatrix();
+        car.camera.aspect = window.innerWidth / window.innerHeight;
+        car.camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }, false);
 }
@@ -85,7 +87,8 @@ function animate(timestamp) {
     car.update();
     player.update(timestamp - lastTimestamp);
 
-    renderer.render(scene, player.camera);
+    // renderer.render(scene, player.camera);
+    renderer.render(scene, car.camera);
 
     lastTimestamp = timestamp;
 
