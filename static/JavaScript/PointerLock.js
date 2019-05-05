@@ -25,39 +25,25 @@ function PointerLock() {
             }
         };
 
-        var pointerLockError = () => {
-            instructions.style.display = '';
-        };
-
         document.addEventListener('pointerlockchange', pointerLockChange, false);
         document.addEventListener('mozpointerlockchange', pointerLockChange, false);
         document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
 
-        document.addEventListener('pointerlockerror', pointerLockError, false);
-        document.addEventListener('mozpointerlockerror', pointerLockError, false);
-        document.addEventListener('webkitpointerlockerror', pointerLockError, false);
-
-        instructions.addEventListener('click', () => {
+        var lockPointer = () => {
             instructions.style.display = 'none';
 
             element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
-
-            var fullScreenChange = () => {
-                if (document.fullscreenElement === element || document.mozFullscreenElement === element || document.mozFullScreenElement === element) {
-                    document.removeEventListener('fullscreenchange', fullScreenChange);
-                    document.removeEventListener('mozfullscreenchange', fullScreenChange);
-                    element.requestPointerLock();
-                }
-            };
-
-            // document.addEventListener('fullscreenchange', fullScreenChange, false);
-            // document.addEventListener('mozfullscreenchange', fullScreenChange, false);
-
-            element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
-            // element.requestFullscreen();
-
             element.requestPointerLock();
+        };
+
+        instructions.addEventListener('click', () => {
+            lockPointer();
         }, false);
+
+        instructions.addEventListener('touchstart', () => {
+            lockPointer();
+            blocker.style.display = 'none';
+        });
     } else {
         instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
     }
