@@ -12,7 +12,7 @@ app.use('/static', express.static(__dirname + '/static'));
 
 // Routing
 app.get('/', function (request, response) {
-    response.sendFile(path.join(__dirname, 'index.html'));
+    response.sendFile(path.join(__dirname, 'test.html'));
 });
 
 // Starts the server.
@@ -50,5 +50,9 @@ io.on('connection', (socket) => {
             body: data.body,
             wheels: data.wheels
         });
+    });
+
+    socket.on('phone', (data) => {
+        console.log(data);
     });
 });

@@ -7,6 +7,7 @@ var gamepadManager = new GamepadManager();
 var networking = new Networking();
 var otherPlayers = new OtherPlayers(networking.socket, scene);
 
+var phone = new Phone();
 var pointerLock = new PointerLock();
 var boxes = new Boxes(networking.socket, world, scene);
 var balls = new Balls(world, scene);

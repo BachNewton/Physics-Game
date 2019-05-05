@@ -25,12 +25,12 @@ function PointerLock() {
             }
         };
 
-        document.addEventListener('pointerlockchange', pointerLockChange, false);
-        document.addEventListener('mozpointerlockchange', pointerLockChange, false);
-        document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
+        // document.addEventListener('pointerlockchange', pointerLockChange, false);
+        // document.addEventListener('mozpointerlockchange', pointerLockChange, false);
+        // document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
 
         var lockPointer = () => {
-            instructions.style.display = 'none';
+            // instructions.style.display = 'none';
 
             element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
             element.requestPointerLock();
@@ -42,7 +42,7 @@ function PointerLock() {
 
         instructions.addEventListener('touchstart', () => {
             lockPointer();
-            blocker.style.display = 'none';
+            // blocker.style.display = 'none';
         });
     } else {
         instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
