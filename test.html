@@ -95,11 +95,11 @@
    </style>
 </head>
 
-<body> <a href="http://code.tutsplus.com/tutorials/an-introduction-to-the-device-orientation-api--cms-21067">Go back to
-      the article</a>
-   <h1>Device Orientation API</h1> <span id="do-unsupported" class="api-support hidden">deviceorientation event not
-      supported</span> <span id="dm-unsupported" class="api-support hidden">devicemotion event not supported</span>
+<body>
+   <span id="do-unsupported" class="api-support hidden">deviceorientation event not supported</span>
+   <span id="dm-unsupported" class="api-support hidden">devicemotion event not supported</span>
    <span id="cnc-unsupported" class="api-support">compassneedscalibration event not supported</span>
+
    <div id="do-results">
       <div id="cube" class="cube">
          <div class="face one">1</div>
@@ -109,25 +109,32 @@
          <div class="face five">5</div>
          <div class="face six">6</div>
       </div>
+
       <div id="do-info" class="">
-         <p> Coordinates: (<span id="beta" class="value">0</span>, <span id="gamma" class="value">0</span>, <span
-               id="alpha" class="value">0</span>) <br> Position absolute? <span id="is-absolute"
-               class="value">false</span> </p>
+         <p> Coordinates: (<span id="beta" class="value">?</span>, <span id="gamma" class="value">?</span>, <span
+               id="alpha" class="value">?</span>) <br> Position absolute? <span id="is-absolute" class="value">?</span>
+         </p>
       </div>
+
       <div id="dm-info" class="">
-         <p> Acceleration: (<span id="acceleration-x" class="value">0</span>, <span id="acceleration-y"
-               class="value">0</span>, <span id="acceleration-z" class="value">0</span>) m/s<sup>2</sup> </p>
-         <p> Acceleration including gravity: (<span id="acceleration-including-gravity-x" class="value">0</span>, <span
-               id="acceleration-including-gravity-y" class="value">0</span>, <span id="acceleration-including-gravity-z"
-               class="value">0</span>) m/s<sup>2</sup> </p>
-         <p> Rotation rate: (<span id="rotation-rate-beta" class="value">0</span>, <span id="rotation-rate-gamma"
-               class="value">0</span>, <span id="rotation-rate-alpha" class="value">0</span>) </p>
-         <p> Interval: <span id="interval" class="value">16</span> milliseconds </p>
+         <p> Acceleration: (<span id="acceleration-x" class="value">?</span>, <span id="acceleration-y"
+               class="value">?</span>, <span id="acceleration-z" class="value">?</span>) m/s<sup>2</sup> </p>
+         <p> Acceleration including gravity: (<span id="acceleration-including-gravity-x" class="value">?</span>, <span
+               id="acceleration-including-gravity-y" class="value">?</span>, <span id="acceleration-including-gravity-z"
+               class="value">?</span>) m/s<sup>2</sup> </p>
+         <p> Rotation rate: (<span id="rotation-rate-beta" class="value">?</span>, <span id="rotation-rate-gamma"
+               class="value">?</span>, <span id="rotation-rate-alpha" class="value">?</span>) </p>
+         <p> Interval: <span id="interval" class="value">Unknown</span> milliseconds </p>
       </div>
-   </div> <small class="author"> Demo created by <a href="http://www.audero.it/">Aurelio De Rosa</a> (<a
-         href="https://twitter.com/AurelioDeRosa">@AurelioDeRosa</a>).<br> This demo is part of the <a
-         href="https://github.com/AurelioDeRosa/HTML5-API-demos">HTML5 API demos repository</a>. </small>
-   <script>if (!('ondeviceorientation' in window)) {
+
+   </div>
+
+   <div id="kyle">
+      Logs:<br>
+   </div>
+
+   <script>
+      if (!('ondeviceorientation' in window)) {
          document.getElementById('do-unsupported').classList.remove('hidden');
       } else {
          document.getElementById('do-info').classList.remove('hidden');
@@ -151,7 +158,11 @@
       } else {
          document.getElementById('dm-info').classList.remove('hidden');
 
+         document.getElementById('kyle').innerText += 'supported!';
+
          window.addEventListener('devicemotion', function (event) {
+            document.getElementById('kyle').innerText += 'event fired!';
+
             document.getElementById('acceleration-x').innerHTML = Math.round(event.acceleration.x);
             document.getElementById('acceleration-y').innerHTML = Math.round(event.acceleration.y);
             document.getElementById('acceleration-z').innerHTML = Math.round(event.acceleration.z);
@@ -169,6 +180,8 @@
 
             document.getElementById('interval').innerHTML = event.interval;
          });
+
+         document.getElementById('kyle').innerText += 'done making listener!';
       }
 
       if (!('oncompassneedscalibration' in window)) {
@@ -177,7 +190,8 @@
          window.addEventListener('compassneedscalibration', function (event) {
             alert('Compass needs calibrating! Wave your device in a figure-eight motion');
          });
-      }</script>
+      }
+   </script>
 </body>
 
 </html>
