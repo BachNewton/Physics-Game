@@ -96,7 +96,8 @@ function animate(timestamp) {
     balls.update();
     boxes.update();
     car.update();
-    phone.update();
+    // phone.update();
+    phone.controls.update();
     // player.update(deltaTime);
 
     // renderer.render(scene, player.camera);

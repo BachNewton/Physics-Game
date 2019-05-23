@@ -1,5 +1,5 @@
 function Light() {
-    this.SHADOW_POWER = 11;
+    this.SHADOW_POWER = 10;
 
     this.addLightTo = (scene) => {
         var ambientLight = new THREE.AmbientLight('white', 0.5);
