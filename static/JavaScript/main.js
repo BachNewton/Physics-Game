@@ -72,8 +72,10 @@ function initThree() {
     window.addEventListener('resize', () => {
         // player.camera.aspect = window.innerWidth / window.innerHeight;
         // player.camera.updateProjectionMatrix();
-        car.camera.aspect = window.innerWidth / window.innerHeight;
-        car.camera.updateProjectionMatrix();
+        // car.camera.aspect = window.innerWidth / window.innerHeight;
+        // car.camera.updateProjectionMatrix();
+        phone.camera.aspect = window.innerWidth / window.innerHeight;
+        phone.camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }, false);
 }
@@ -94,10 +96,12 @@ function animate(timestamp) {
     balls.update();
     boxes.update();
     car.update();
+    phone.update();
     // player.update(deltaTime);
 
     // renderer.render(scene, player.camera);
-    renderer.render(scene, car.camera);
+    // renderer.render(scene, car.camera);
+    renderer.render(scene, phone.camera);
 
     lastTimestamp = timestamp;
 

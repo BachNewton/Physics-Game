@@ -42,7 +42,9 @@ function PointerLock() {
 
         instructions.addEventListener('touchstart', () => {
             lockPointer();
-            // blocker.style.display = 'none';
+            blocker.style.display = 'none';
+            document.body.requestFullscreen();
+            phone.updateRotationCenter();
         });
     } else {
         instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
