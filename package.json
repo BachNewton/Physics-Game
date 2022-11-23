@@ -20,6 +20,6 @@
     "@types/cannon": "^0.1.3",
     "@types/three": "^0.93.19",
     "express": "^4.16.4",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.5.0"
   }
 }
